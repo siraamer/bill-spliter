@@ -4,6 +4,9 @@ import catchAsync from '../helper/catchAsync';
 import User from '../models/userModel';
 import HttpException from '../helper/apiError';
 
+// @desc createBill
+// @endpoint POST api/v1/bills
+// @access protected
 const createBill = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { title, price, paidBy, shareWith } = req.body;
@@ -27,6 +30,9 @@ const createBill = catchAsync(
   }
 );
 
+// @desc get all bills (current bills that we not calculate yest)
+// @endpoint GET api/v1/bills
+// @access protected
 const getAllBills = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const bills = await Bill.find({ done: false });
@@ -38,6 +44,10 @@ const getAllBills = catchAsync(
     });
   }
 );
+
+// @desc get all old bills (if you need to take a look)
+// @endpoint GET api/v1/bills/oldbills
+// @access protected
 
 const getAllOldBills = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -51,6 +61,9 @@ const getAllOldBills = catchAsync(
   }
 );
 
+// @desc delete all bills including current and old one (be careful because that means actual delete all bills from DATABASE)
+// @endpoint DELETE api/v1/bills
+// @access protected
 const deleteAllBills = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await Bill.deleteMany();
@@ -62,6 +75,9 @@ const deleteAllBills = catchAsync(
   }
 );
 
+// @desc delete specific bill including current and old one (be careful because that means actual delete this bill from DATABASE)
+// @endpoint DELETE api/v1/bills/:billId
+// @access protected
 const deleteBill = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { billId } = req.params;
@@ -95,6 +111,10 @@ const deleteBill = catchAsync(
   }
 );
 
+// @desc GET all current bills Paid By specific user (if you need to know where your fucking money going on)
+// @endpoint GET api/v1/bills/newbills/:userId
+// @access protected
+
 const getNewbillsPaidBySpecificUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
@@ -110,6 +130,10 @@ const getNewbillsPaidBySpecificUser = catchAsync(
     res.status(200).json({ Result: data.length, data: data });
   }
 );
+
+// @desc GET all old bills Paid By specific user
+// @endpoint GET api/v1/bills/oldbills/:userId
+// @access protected
 
 const getOldbillsPaidBySpecificUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -127,6 +151,10 @@ const getOldbillsPaidBySpecificUser = catchAsync(
   }
 );
 
+// @desc GET all current bills that we not done from it yet, that looks like weird because I'm using <User> Model to calculate the diffirence between User DEBT and CREDIT
+// @endpoint GET api/v1/bills/oldbills/:userId
+// @access protected
+
 const weNeedToTalk = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const friends = await User.find({});
@@ -138,12 +166,16 @@ const weNeedToTalk = catchAsync(
   }
 );
 
+// @desc   finishing from all current bills, which means all current bills will moving to oldbills and user.debt and user.credit user.billsHePaid returning to zero
+// @endpoint POST api/v1/bills/done
+// @access protected
+
 const checkoutBills = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await Bill.updateMany({ done: false }, { $set: { done: true } });
     await User.updateMany(
       {},
-      { $set: { debt: 0, credit: 0, billsHePaid: [], billsResult: 0 } }
+      { $set: { debt: 0, credit: 0, billsHePaid: [] } }
     );
     res.status(200).json({ data: 'Okay, We Done Here!' });
   }
