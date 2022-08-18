@@ -30,7 +30,7 @@ const createBill = catchAsync(
   }
 );
 
-// @desc get all bills (current bills that we not calculate yest)
+// @desc get all bills (current bills that we not calculate yet)
 // @endpoint GET api/v1/bills
 // @access protected
 const getAllBills = catchAsync(

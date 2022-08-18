@@ -7,6 +7,10 @@ import HttpException from '../helper/apiError';
 import catchAsync from '../helper/catchAsync';
 import { JwtPayload } from '../helper/generateToken';
 
+// @desc SignUp User
+// @endpoint POST api/v1/users/signup
+// @access public
+
 const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, email, password } = req.body;
@@ -33,6 +37,10 @@ const signup = catchAsync(
   }
 );
 
+// @desc login User
+// @endpoint POST api/v1/users/login
+// @access public
+
 const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
@@ -54,6 +62,7 @@ const login = catchAsync(
   }
 );
 
+// @desc Middleware to make sure the user is logged in before he takes any action
 const restricted = (exports.protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     // 1) check if token exist & if token exist hold it
@@ -100,6 +109,10 @@ const restricted = (exports.protect = catchAsync(
   }
 ));
 
+// @desc DELETE All users (be careful, because that means delete all users from DATABASE)
+// @endpoint DELETE api/v1/users
+// @access protected
+
 const deleteAllUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await User.deleteMany();
@@ -110,6 +123,9 @@ const deleteAllUser = catchAsync(
   }
 );
 
+// @desc GET All users
+// @endpoint GET api/v1/users
+// @access protected
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const users = await User.find({});
